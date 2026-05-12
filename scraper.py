@@ -5,7 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import logging
 import time
 import random
-from typing import List, Dict, Optional
+import os
+from typing import List, Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ def _create_driver():
     options.add_argument("--disable-gpu")
     options.add_argument("--headless=new")
     options.add_argument("--window-size=1920,1080")
+    options.binary_location = os.environ.get("CHROME_BIN", "/usr/bin/chromium")
     driver = uc.Chrome(options=options)
     return driver
 
@@ -41,7 +43,7 @@ def scrape_akakce(query: str) -> List[Dict]:
                 price = float(price_el.text.replace(".", "").replace(",", ".").replace("TL", "").strip())
                 if name and price:
                     products.append({"name": name, "price": price, "market": "Akakçe", "source": "Akakçe"})
-            except:
+            except Exception:
                 continue
         logger.info(f"Akakçe: {len(products)} ürün")
     except Exception as e:
@@ -72,7 +74,7 @@ def scrape_cimri(query: str) -> List[Dict]:
                 price = float(price_el.text.replace(".", "").replace(",", ".").replace("TL", "").strip())
                 if name and price:
                     products.append({"name": name, "price": price, "market": "Cimri", "source": "Cimri"})
-            except:
+            except Exception:
                 continue
         logger.info(f"Cimri: {len(products)} ürün")
     except Exception as e:
